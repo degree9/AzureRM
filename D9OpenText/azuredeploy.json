@@ -12,10 +12,10 @@
     }
   },
   "variables": {
-    "d9coreTemplateFilePath": "D9Core/Templates/azuredeploy.json",
-    "d9coreTemplateParametersFilePath": "D9Core/Templates/azuredeploy.parameters.json",
-    "d9opentextTemplateFilePath": "D9OpenText/Templates/d9opentext.json",
-    "d9opentextTemplateParametersFilePath": "D9OpenText/Templates/d9opentext.parameters.json"  },
+    "d9coreTemplateFilePath": "D9Core/azuredeploy.json",
+    "d9coreTemplateParametersFilePath": "D9Core/azuredeploy.parameters.json",
+    "d9opentextTemplateFilePath": "D9OpenText/d9opentext.json",
+    "d9opentextTemplateParametersFilePath": "D9OpenText/d9opentext.parameters.json"  },
   "resources": [
     {
       "apiVersion": "2015-01-01",
