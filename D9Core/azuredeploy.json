@@ -12,14 +12,14 @@
     }
   },
   "variables": {
-    "d9automationTemplateFilePath": "D9Core/Templates/d9automation.json",
-    "d9automationTemplateParametersFilePath": "D9Core/Templates/d9automation.parameters.json",
-    "d9keyvaultTemplateFilePath": "D9Core/Templates/d9keyvault.json",
-    "d9keyvaultTemplateParametersFilePath": "D9Core/Templates/d9keyvault.parameters.json",
-    "d9networkTemplateFilePath": "D9Core/Templates/d9network.json",
-    "d9networkTemplateParametersFilePath": "D9Core/Templates/d9network.parameters.json",
-    "d9storageTemplateFilePath": "D9Core/Templates/d9storage.json",
-    "d9storageTemplateParametersFilePath": "D9Core/Templates/d9storage.parameters.json"
+    "d9automationTemplateFilePath": "D9Core/d9automation.json",
+    "d9automationTemplateParametersFilePath": "D9Core/d9automation.parameters.json",
+    "d9keyvaultTemplateFilePath": "D9Core/d9keyvault.json",
+    "d9keyvaultTemplateParametersFilePath": "D9Core/d9keyvault.parameters.json",
+    "d9networkTemplateFilePath": "D9Core/d9network.json",
+    "d9networkTemplateParametersFilePath": "D9Core/d9network.parameters.json",
+    "d9storageTemplateFilePath": "D9Core/d9storage.json",
+    "d9storageTemplateParametersFilePath": "D9Core/d9storage.parameters.json"
   },
   "resources": [
     {
