@@ -1,0 +1,196 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "d9opentextCSSize": {
+      "type": "string",
+      "defaultValue": "Standard_A4"
+    },
+    "d9storageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS"
+    },
+    "d9opentextPublicIPType": {
+      "type": "string",
+      "defaultValue": "Static",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ]
+    },
+    "d9networkSubnet": {
+      "type": "string",
+      "defaultValue": "Network-0"
+    },
+    "d9networkSubnetOctetA": {
+      "type": "int",
+      "defaultValue": 11,
+      "minValue": 10,
+      "maxValue": 255
+    },
+    "d9networkSubnetOctetB": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 255
+    },
+    "d9networkSubnetOctetC": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 255
+    },
+    "d9networkSubnetOctetD": {
+      "type": "int",
+      "defaultValue": 10,
+      "minValue": 0,
+      "maxValue": 255
+    },
+    "d9networkVNet": {
+      "type": "string",
+      "defaultValue": "d9network"
+    }
+  },
+  "variables": {
+    "d9networkSubnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks', 'd9network'), '/subnets/', parameters('d9networkSubnet'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "dependsOn": [],
+      "location": "[resourceGroup().location]",
+      "name": "d9opentextCS-AS",
+      "type": "Microsoft.Compute/availabilitySets",
+      "properties": {
+        "platformFaultDomainCount": 3,
+        "platformUpdateDomainCount": 3
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "dependsOn": [],
+      "location": "[resourceGroup().location]",
+      "name": "d9opentextCS-IP",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('d9opentextPublicIPType')]"
+      },
+      "type": "Microsoft.Network/publicIPAddresses"
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "dependsOn": [ "d9opentextCS-IP" ],
+      "location": "[resourceGroup().location]",
+      "name": "d9opentextCS-LB",
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "d9opentextCS-LB-FE",
+            "properties": { "publicIPAddress": { "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'd9opentextCS-IP')]" } }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "d9opentextCS-LB-BE"
+          }
+        ],
+        "inboundNatRules": [
+          {
+            "name": "d9rdp-NatRule",
+            "properties": {
+              "protocol": "tcp",
+              "backendPort": 3389,
+              "frontendPort": 3389,
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', 'd9opentextCS-LB'), '/frontendIPConfigurations/', 'd9opentextCS-LB-FE')]"
+              }
+            }
+          }
+        ]
+      },
+      "type": "Microsoft.Network/loadBalancers"
+    },
+    {
+      "name": "d9opentextCS-NIC",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "d9opentextCS-LB"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "d9opentext-ip",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(parameters('d9networkSubnetOctetA'), '.', parameters('d9networkSubnetOctetB'), '.', parameters('d9networkSubnetOctetC'), '.', add(parameters('d9networkSubnetOctetD'), 1))]",
+              "subnet": {
+                "id": "[variables('d9networkSubnetRef')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', 'd9opentextCS-LB'), '/backendAddressPools/', 'd9opentextCS-LB-BE')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[concat(resourceId('Microsoft.Network/loadBalancers', 'd9opentextCS-LB'), '/inboundNatRules/d9rdp-NatRule')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "d9opentextCS",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "d9opentextCS-AS",
+        "d9opentextCS-NIC"
+      ],
+      "plan": {
+        "name": "ot-cs16",
+        "product": "opentext-content-server-16",
+        "publisher": "opentext"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('d9opentextCSSize')]"
+        },
+        "osProfile": {
+          "computerName": "opentextcs",
+          "adminUsername": "D9OpenText",
+          "adminPassword": "D9OpenTextD9"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "opentext",
+            "offer": "opentext-content-server-16",
+            "sku": "ot-cs16",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "OSDisk",
+            "vhd": {
+              "uri": "[concat('http://', 'd9storage', uniqueString(resourceGroup().id, parameters('d9storageType')), '.blob.core.windows.net/vhd/d9opentext.vhd')]"
+            },
+            "createOption": "FromImage",
+            "caching": "ReadWrite"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'd9opentextCS-NIC')]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

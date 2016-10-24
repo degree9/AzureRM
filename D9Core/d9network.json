@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "d9networkPrefix": {
+      "type": "string",
+      "defaultValue": "11.0.0.0/16"
+    },
+    "d9networkSubnets": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "Network-0",
+          "properties": {
+            "addressPrefix": "11.0.0.0/24"
+          }
+        },
+        {
+          "name": "Network-1",
+          "properties": {
+            "addressPrefix": "11.0.1.0/24"
+          }
+        }
+      ]
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "apiVersion": "2016-03-30",
+      "dependsOn": [ ],
+      "location": "[resourceGroup().location]",
+      "name": "d9network",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [ "[parameters('d9networkPrefix')]" ]
+        },
+        "subnets": "[parameters('d9networkSubnets')]"
+      },
+      "tags": {
+        "displayName": "d9networkVNet"
+      },
+      "type": "Microsoft.Network/virtualNetworks"
+    }
+  ],
+  "outputs": {
+  }
+}

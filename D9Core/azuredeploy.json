@@ -1,0 +1,96 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/degree9/AzureRM/master"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "d9automationTemplateFilePath": "D9Core/Templates/d9automation.json",
+    "d9automationTemplateParametersFilePath": "D9Core/Templates/d9automation.parameters.json",
+    "d9keyvaultTemplateFilePath": "D9Core/Templates/d9keyvault.json",
+    "d9keyvaultTemplateParametersFilePath": "D9Core/Templates/d9keyvault.parameters.json",
+    "d9networkTemplateFilePath": "D9Core/Templates/d9network.json",
+    "d9networkTemplateParametersFilePath": "D9Core/Templates/d9network.parameters.json",
+    "d9storageTemplateFilePath": "D9Core/Templates/d9storage.json",
+    "d9storageTemplateParametersFilePath": "D9Core/Templates/d9storage.parameters.json"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ ],
+      "name": "d9automation",
+      "properties": {
+        "mode": "Incremental",
+        "parametersLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9automationTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "templateLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9automationTemplateFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    },
+    {
+      "name": "d9keyvault",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9keyvaultTemplateFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9keyvaultTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ ],
+      "name": "d9network",
+      "properties": {
+        "mode": "Incremental",
+        "parametersLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9networkTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]"
+        },
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9networkTemplateFilePath'), parameters('_artifactsLocationSasToken'))]"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "dependsOn": [ ],
+      "name": "d9storage",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9storageTemplateFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9storageTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    }
+  ],
+  "outputs": {
+  }
+}
