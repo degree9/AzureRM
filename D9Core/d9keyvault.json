@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+  "parameters": {
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "d92567c7-8d49-4c20-a0fc-9a10863fda45"
+    }
+  },
+    "variables": {
+    },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2015-06-01",
+      "name": "[concat('d9keyvault', uniqueString(resourceGroup().id))]",
+      "tags": {
+        "displayName": "d9keyvault"
+      },
+      "location": "eastus2",
+      "properties": {
+        "tenantId": "[parameters('tenantId')]",
+        "accessPolicies": [ ],
+        "enabledForDeployment": true,
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        }
+      }
+    }
+  ],
+    "outputs": {
+    }
+}

@@ -1,0 +1,56 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/degree9/AzureRM/master"
+    },
+    "_artifactsLocationSasToken": {
+      "type": "securestring",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "d9coreTemplateFilePath": "D9Core/Templates/azuredeploy.json",
+    "d9coreTemplateParametersFilePath": "D9Core/Templates/azuredeploy.parameters.json",
+    "d9opentextTemplateFilePath": "D9OpenText/Templates/d9opentext.json",
+    "d9opentextTemplateParametersFilePath": "D9OpenText/Templates/d9opentext.parameters.json"  },
+  "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "dependsOn": [],
+      "name": "d9core",
+      "properties": {
+        "mode": "Incremental",
+        "parametersLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9coreTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "templateLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9coreTemplateFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    },
+    {
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["d9core"],
+      "name": "d9opentext",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9opentextTemplateFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parametersLink": {
+          "uri": "[concat(parameters('_artifactsLocation'), '/', variables('d9opentextTemplateParametersFilePath'), parameters('_artifactsLocationSasToken'))]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    }
+  ],
+  "outputs": {}
+}

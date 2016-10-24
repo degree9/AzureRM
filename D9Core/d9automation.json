@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+    },
+  "resources": [
+    {
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2015-10-31",
+      "name": "[concat('d9automation', uniqueString(resourceGroup().id))]",
+      "location": "eastus2",
+      "tags": { "displayName": "d9automation" },
+      "properties": {
+        "sku": {
+          "name": "Free"
+        }
+      }
+    }
+  ],
+    "outputs": {
+    }
+}
